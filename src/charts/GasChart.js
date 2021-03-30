@@ -26,7 +26,7 @@ const options = {
   },
 };
 
-class TemperatureChart extends React.Component {
+class GasChart extends React.Component {
   constructor() {
     super();
     this.chartReference = React.createRef();
@@ -141,7 +141,7 @@ class TemperatureChart extends React.Component {
       const { firebaseDatabase } = this.state;
 
       await firebaseDatabase
-        .ref(getDatabasePath(firebaseRefPaths.temperature))
+        .ref(getDatabasePath(firebaseRefPaths.gas))
         .on("value", (snapshot) => {
           if (snapshot.exists()) {
             const val = snapshot.val();
@@ -190,4 +190,4 @@ class TemperatureChart extends React.Component {
   }
 }
 
-export default TemperatureChart;
+export default GasChart;

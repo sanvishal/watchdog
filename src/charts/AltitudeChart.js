@@ -141,7 +141,7 @@ class AltitudeChart extends React.Component {
       const { firebaseDatabase } = this.state;
 
       await firebaseDatabase
-        .ref(getDatabasePath(firebaseRefPaths.realAltitude))
+        .ref(getDatabasePath(firebaseRefPaths.temperature))
         .on("value", (snapshot) => {
           if (snapshot.exists()) {
             const val = snapshot.val();

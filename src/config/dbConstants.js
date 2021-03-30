@@ -3,7 +3,8 @@ export const firebaseRefPaths = {
     humidity: "Humidity",
     gas: "Gas",
     realAltitude: "Real_Altitude",
-    pressure: "Pressure"
+    pressure: "Pressure",
+    gas: "Gas",
 }
 
 export const firebaseRootPath = "watchdog"
