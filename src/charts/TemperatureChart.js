@@ -5,7 +5,8 @@ import firebaseConfig from "../config/firebaseConfig";
 import { firebaseRefPaths } from "../config/dbConstants";
 import { getDatabasePath } from "../utils/helpers";
 import { Line } from "react-chartjs-2";
-import { AlertTriangle, TrendingUp } from "react-feather";
+import { AlertTriangle, HelpCircle, Meh, Minus, Smile, TrendingDown, TrendingUp } from "react-feather";
+import {constants} from '../config/naturalConstants';
 
 const options = {
   responsive: true,
@@ -66,6 +67,7 @@ class TemperatureChart extends React.Component {
         },
       ],
     },
+    realtimeValue: 0,
   };
 
   changeLabel() {
@@ -149,6 +151,7 @@ class TemperatureChart extends React.Component {
           if (snapshot.exists()) {
             const val = snapshot.val();
             console.log(val);
+            this.setState({ realtimeValue: val });
             let altitudeDataqueue = this.queueValues(
               this.state.altitudeData,
               Number(val),
@@ -157,10 +160,10 @@ class TemperatureChart extends React.Component {
             let altitudeLabelqueue = this.queueValues(
               this.state.altitudeLabel,
               new Date().getHours() +
-              ":" +
-              new Date().getMinutes() +
-              ":" +
-              new Date().getSeconds(),
+                ":" +
+                new Date().getMinutes() +
+                ":" +
+                new Date().getSeconds(),
               10
             );
             this.prepareChartData(altitudeDataqueue, altitudeLabelqueue);
@@ -173,7 +176,55 @@ class TemperatureChart extends React.Component {
     }
   };
 
+  getStatusColor(realtimeDifference) {
+    return realtimeDifference === 0
+      ? "#6D7688"
+      : realtimeDifference > 0
+      ? "#EB3538"
+      : "greenyellow";
+  }
+
+  getRealtimeStatus(realtimeValue) {
+    const {normalTemperature, higherTemperature} = constants.temperature; 
+    if(realtimeValue === 0) {
+      return {
+        title: '-',
+        subtitle: '-',
+        color: '#6D7688',
+        jsx: <Minus/>
+      }
+    }
+    if(realtimeValue <= normalTemperature) {
+      return {
+        title: 'Normal',
+        subtitle: 'This is a pretty normal temperature, no need to worry',
+        color: 'greenyellow',
+        jsx: <Smile/>
+      };
+    } else if(realtimeValue > normalTemperature && realtimeValue <= higherTemperature) {
+      return {
+        title: 'Warning',
+        subtitle: 'Temperature Exceeding Room temperature!',
+        color: '#FFB600',
+        jsx: <Meh/>
+      };
+    }
+
+    return {
+      title: 'Alert',
+      subtitle: 'High temprature detected, take measures',
+      color: '#EB3538',
+      jsx: <AlertTriangle/>
+    };
+  }
+
   render() {
+    const { altitudeData, realtimeValue } = this.state;
+    let realtimeDifference =
+      altitudeData[0] && altitudeData[1]
+        ? altitudeData[0] - altitudeData[1]
+        : 0;
+    let realtimeStatus = this.getRealtimeStatus(realtimeValue);
     if (this.state.isConnected) {
       return (
         <React.Fragment>
@@ -187,29 +238,43 @@ class TemperatureChart extends React.Component {
           </div>
           <div class="bottom-lables">
             <div class="realtime-value badge">
-              <div class="title">
-                Realtime Value
-                </div>
+              <div class="title">Realtime Value</div>
               <div class="value">
-                51.4
-                  <span class="unit"> °C</span>
+                {this.state.realtimeValue}
+                <span class="unit"> °C</span>
               </div>
               <div class="trend">
-                <TrendingUp />
-                <span class="value">+3.2 °C</span>
+                {realtimeDifference === 0 ? (
+                  <Minus color={this.getStatusColor(realtimeDifference)} />
+                ) : realtimeDifference > 0 ? (
+                  <TrendingUp color={this.getStatusColor(realtimeDifference)} />
+                ) : (
+                  <TrendingDown
+                    color={this.getStatusColor(realtimeDifference)}
+                  />
+                )}
+                <span
+                  class="value"
+                  style={{ color: this.getStatusColor(realtimeDifference) }}
+                >
+                  {realtimeDifference > 0
+                    ? "+" + realtimeDifference.toFixed(1)
+                    : realtimeDifference.toFixed(1)}{" "}
+                  °C
+                </span>
               </div>
             </div>
             <div class="realtime-status badge">
-              <div class="title">
-                Realtime Status
-              </div>
+              <div class="title">Realtime Status</div>
               <div class="status-container">
-                <div class="status-icon">
-                  <AlertTriangle />
+                <div class="status-icon" style = {{background: realtimeStatus.color}}>
+                  {realtimeStatus.jsx}
                 </div>
                 <div class="status">
-                  <div class="title">Warning</div>
-                  <div class="sub-title">Temperature Exceeding Room temperature</div>
+                  <div class="title" style = {{color: realtimeStatus.color}}>{realtimeStatus.title}</div>
+                  <div class="sub-title">
+                    {realtimeStatus.subtitle}
+                  </div>
                 </div>
               </div>
             </div>
@@ -217,11 +282,7 @@ class TemperatureChart extends React.Component {
         </React.Fragment>
       );
     }
-    return (
-      <div>
-        loading...please connect
-      </div>
-    );
+    return <div>loading...please connect</div>;
   }
 }
 
