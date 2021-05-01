@@ -5,8 +5,11 @@ import firebaseConfig from "../config/firebaseConfig";
 import { firebaseRefPaths } from "../config/dbConstants";
 import { getDatabasePath } from "../utils/helpers";
 import { Line } from "react-chartjs-2";
+import { AlertTriangle, TrendingUp } from "react-feather";
 
 const options = {
+  responsive: true,
+  // maintainAspectRatio: false,
   legend: {
     display: false,
   },
@@ -173,13 +176,45 @@ class PressureChart extends React.Component {
   render() {
     if (this.state.isConnected) {
       return (
-        <div>
-          <Line
-            ref={(reference) => (this.chartReference = reference)}
-            data={this.state.altitudeChart}
-            options={options}
-          />
-        </div>
+        <React.Fragment>
+          <div class="chart">
+            <div class="title">{this.props.name}</div>
+            <Line
+              ref={(reference) => (this.chartReference = reference)}
+              data={this.state.altitudeChart}
+              options={options}
+            />
+          </div>
+          <div class="bottom-lables">
+            <div class="realtime-value badge">
+              <div class="title">
+                Realtime Value
+                </div>
+              <div class="value">
+                51.4
+                  <span class="unit"> °C</span>
+              </div>
+              <div class="trend">
+                <TrendingUp />
+                <span class="value">+3.2 °C</span>
+              </div>
+            </div>
+            <div class="realtime-status badge">
+              <div class="title">
+                Realtime Status
+              </div>
+              <div class="status-container">
+                <div class="status-icon">
+                  <AlertTriangle />
+                </div>
+                <div class="status">
+                  <div class="title">Warning</div>
+                  <div class="sub-title">Temperature Exceeding Room temperature</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </React.Fragment>
       );
     }
     return (

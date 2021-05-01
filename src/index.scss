@@ -1,0 +1,317 @@
+html,
+body {
+  margin: 0px;
+  padding: 0px;
+  height: 100%;
+  background-color: #161616;
+}
+
+@font-face {
+  font-family: "archia";
+  src: local("archia"),
+    url(../src/fonts/archia-medium-webfont.woff2) format("woff");
+}
+
+@font-face {
+  font-family: "archia-semibold";
+  src: local("archia-semibold"),
+    url(../src/fonts/archia-semibold-webfont.woff2) format("woff");
+}
+
+@font-face {
+  font-family: "archia-bold";
+  src: local("archia-bold"),
+    url(../src/fonts/archia-bold-webfont.woff2) format("woff");
+}
+
+*:focus {
+  outline: none;
+}
+
+@keyframes spinAround {
+  from {
+    -webkit-transform: rotate(0deg);
+            transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(359deg);
+            transform: rotate(359deg);
+  }
+}
+
+.loader::after  {
+  -webkit-animation: spinAround 500ms infinite linear;
+          animation: spinAround 500ms infinite linear;
+  border: 2px solid #dbdbdb;
+  border-radius: 290486px;
+  border-right-color: transparent;
+  border-top-color: transparent;
+  content: "";
+  display: block;
+  height: 1em;
+  position: relative;
+  width: 1em;
+}
+
+.loader {
+  color: transparent !important;
+  pointer-events: none;
+  display: flex;
+  justify-content: center;
+}
+
+
+.App {
+  .main-container {
+    padding: 20px 40px;
+    background-color: #161616;
+  }
+
+  .connection-container {
+    display: flex;
+    height: 30vh;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+
+    button {
+      background-color: #373737;
+      color: white;
+      height: 40px;
+      width: 200px;
+      font-size: 18px;
+      border: none;
+      font-family: "archia-bold";
+      border-radius: 5px;
+      box-shadow: 0px 4px 19px rgba(0, 0, 0, 0.42);
+      transition: all 0.3s ease-in-out;
+      cursor: pointer;
+
+      &:hover {
+        transform: scale(1.05);
+        box-shadow: 0px 4px 19px 4px rgba(0, 0, 0, 0.42);
+      }
+    }
+
+    input {
+      margin-bottom: 30px;
+      width: 40%;
+      height: 70px;
+      font-size: 2vw;
+      background-color: #373737;
+      color: white;
+      border-radius: 5px;
+      border: 2px solid #52525200;
+      font-family: "archia-semibold";
+      padding-left: 7px;
+      transition: border 0.15s ease-in-out;
+      box-shadow: 0px 4px 19px 2px rgba(0, 0, 0, 0.1);
+
+      &:focus {
+        border: 2px solid #525252;
+      }
+    }
+  }
+}
+
+.row {
+  display: flex;
+}
+
+.column {
+  flex: 50%;
+}
+
+.header {
+  height: 70px;
+  background-color: #1b1b1b;
+  font-family: "archia-bold";
+  color: white;
+  display: flex;
+  align-items: center;
+  padding-left: 40px;
+  font-size: 18px;
+
+  .header-content {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    .left {
+      display: flex;
+      align-items: center;
+      flex: 1;
+      img {
+        width: 42px;
+        height: 42px;
+        margin-right: 8px;
+      }
+      .status {
+        display: flex;
+        align-items: center;
+        .status-icon {
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          margin-right: 4px;
+
+          &.green {
+            background-color: greenyellow;
+          }
+
+          &.red {
+            background-color: #eb3538;
+          }
+        }
+
+        font-size: 12px;
+        font-family: "archia";
+        color: #6d7688;
+      }
+    }
+
+    .center {
+      color: #8492A4;
+      font-size: 24px;
+    }
+
+    .right {
+      flex: 1;
+    }
+  }
+}
+
+.charts-container {
+  .top-bar {
+    .left {
+      .title {
+        font-family: 'archia-semibold';
+        font-size: 30px;
+        color: white;
+      }
+
+      .subtitle {
+        font-family: 'archia';
+        font-size: 16px;
+        color: #6D7688;
+      }
+    }
+
+    margin-bottom: 30px;
+  }
+
+  .chart {
+    background-color: #1B1B1B;
+    box-shadow: 0px 4px 19px rgba(0, 0, 0, 0.22);
+    border-radius: 8px;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    padding: 20px;
+    position: relative;
+    z-index: 10;
+
+    .title {
+      font-family: 'archia-bold';
+      font-size: 30px;
+      color: white;
+      margin-bottom: 22px;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+  }
+
+  .bottom-lables {
+    height: 160px;
+    margin-top: -45px;
+    position: relative;
+    z-index: 0;
+    display: flex;
+    .title {
+      font-size: 16px;
+      font-family: 'archia-semibold';
+      color: #B4B4B4;
+      margin-bottom: 7px;
+    }
+
+    .badge {
+      width: 150px;
+      height: 90px;
+      background-color: #1B1B1B;
+      padding: 15px;
+      padding-top: 35px;
+      border-radius:8px;
+      margin-left: 30px;
+      .value {
+        font-size: 36px;
+        font-family: 'archia-bold';
+        color: white;
+
+        .unit {
+          font-size: 18px;
+          font-family: 'archia';
+          color: white;
+        }
+      }
+
+      .trend {
+        display: flex;
+        align-items: center;
+        svg {
+          width: 21px;
+          height: 21px;
+          color: #EB3538;
+          margin-right: 5px;
+        }
+        .value {
+          font-family: 'archia';
+          font-size: 13px; 
+          color: #EB3538;
+        }
+        
+      }
+
+      &.realtime-status {
+        width: 240px;
+        .status-container {
+          display: flex;
+          align-items: center;
+
+          .status-icon {
+            background-color: #FFB600;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            margin-right: 6px;
+            svg {
+              width: 30px;
+              height: 30px;
+              margin-left: 5px;
+              margin-right: 5px;
+              stroke-width: 3;
+            }
+          }
+  
+          .status {
+            .title {
+              font-size: 20px;
+              font-family: 'archia-bold';
+              color: #FFB600;
+              margin-bottom: 0px;
+            }
+
+            .sub-title {
+              font-size: 12px;
+              color: #C0C7CE;
+              font-family: 'archia';
+            }
+          }
+        }
+      }
+    }
+  }
+}

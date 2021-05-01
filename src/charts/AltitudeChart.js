@@ -7,6 +7,8 @@ import { getDatabasePath } from "../utils/helpers";
 import { Line } from "react-chartjs-2";
 
 const options = {
+  responsive: true,
+  // maintainAspectRatio: false,
   legend: {
     display: false,
   },
