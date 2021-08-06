@@ -100,11 +100,11 @@ class AltitudeChart extends React.Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-      if(prevProps.doConnect !== this.props.doConnect) {
-          if(this.props.doConnect) {
-              this.connect();
-          }
+    if (prevProps.doConnect !== this.props.doConnect) {
+      if (this.props.doConnect) {
+        this.connect();
       }
+    }
   }
 
   queueValues(array, item, length) {
@@ -133,7 +133,9 @@ class AltitudeChart extends React.Component {
         },
       },
       () => {
-        this.chartReference.chartInstance.update();
+        if (this.chartReference.chartInstance) {
+          this.chartReference.chartInstance.update();
+        }
       }
     );
   }
@@ -184,11 +186,7 @@ class AltitudeChart extends React.Component {
         </div>
       );
     }
-    return (
-      <div>
-        loading...please connect
-      </div>
-    );
+    return <div>loading...please connect</div>;
   }
 }
 

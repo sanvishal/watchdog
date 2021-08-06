@@ -5,8 +5,16 @@ import firebaseConfig from "../config/firebaseConfig";
 import { firebaseRefPaths } from "../config/dbConstants";
 import { getDatabasePath } from "../utils/helpers";
 import { Line } from "react-chartjs-2";
-import { AlertTriangle, HelpCircle, Meh, Minus, Smile, TrendingDown, TrendingUp } from "react-feather";
-import {constants} from '../config/naturalConstants';
+import {
+  AlertTriangle,
+  HelpCircle,
+  Meh,
+  Minus,
+  Smile,
+  TrendingDown,
+  TrendingUp,
+} from "react-feather";
+import { constants } from "../config/naturalConstants";
 
 const options = {
   responsive: true,
@@ -136,7 +144,9 @@ class TemperatureChart extends React.Component {
         },
       },
       () => {
-        this.chartReference.chartInstance.update();
+        if (this.chartReference.chartInstance) {
+          this.chartReference.chartInstance.update();
+        }
       }
     );
   }
@@ -185,36 +195,39 @@ class TemperatureChart extends React.Component {
   }
 
   getRealtimeStatus(realtimeValue) {
-    const {normalTemperature, higherTemperature} = constants.temperature; 
-    if(realtimeValue === 0) {
+    const { normalTemperature, higherTemperature } = constants.temperature;
+    if (realtimeValue === 0) {
       return {
-        title: '-',
-        subtitle: '-',
-        color: '#6D7688',
-        jsx: <Minus/>
-      }
-    }
-    if(realtimeValue <= normalTemperature) {
-      return {
-        title: 'Normal',
-        subtitle: 'This is a pretty normal temperature, no need to worry',
-        color: 'greenyellow',
-        jsx: <Smile/>
+        title: "-",
+        subtitle: "-",
+        color: "#6D7688",
+        jsx: <Minus />,
       };
-    } else if(realtimeValue > normalTemperature && realtimeValue <= higherTemperature) {
+    }
+    if (realtimeValue <= normalTemperature) {
       return {
-        title: 'Warning',
-        subtitle: 'Temperature Exceeding Room temperature!',
-        color: '#FFB600',
-        jsx: <Meh/>
+        title: "Normal",
+        subtitle: "This is a pretty normal temperature, no need to worry",
+        color: "greenyellow",
+        jsx: <Smile />,
+      };
+    } else if (
+      realtimeValue > normalTemperature &&
+      realtimeValue <= higherTemperature
+    ) {
+      return {
+        title: "Warning",
+        subtitle: "Temperature Exceeding Room temperature!",
+        color: "#FFB600",
+        jsx: <Meh />,
       };
     }
 
     return {
-      title: 'Alert',
-      subtitle: 'High temprature detected, take measures',
-      color: '#EB3538',
-      jsx: <AlertTriangle/>
+      title: "Alert",
+      subtitle: "High temprature detected, take measures",
+      color: "#EB3538",
+      jsx: <AlertTriangle />,
     };
   }
 
@@ -267,14 +280,17 @@ class TemperatureChart extends React.Component {
             <div class="realtime-status badge">
               <div class="title">Realtime Status</div>
               <div class="status-container">
-                <div class="status-icon" style = {{background: realtimeStatus.color}}>
+                <div
+                  class="status-icon"
+                  style={{ background: realtimeStatus.color }}
+                >
                   {realtimeStatus.jsx}
                 </div>
                 <div class="status">
-                  <div class="title" style = {{color: realtimeStatus.color}}>{realtimeStatus.title}</div>
-                  <div class="sub-title">
-                    {realtimeStatus.subtitle}
+                  <div class="title" style={{ color: realtimeStatus.color }}>
+                    {realtimeStatus.title}
                   </div>
+                  <div class="sub-title">{realtimeStatus.subtitle}</div>
                 </div>
               </div>
             </div>
