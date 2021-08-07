@@ -9,8 +9,10 @@ import { Line } from "react-chartjs-2";
 const options = {
   responsive: true,
   // maintainAspectRatio: false,
-  legend: {
-    display: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
   },
   scales: {
     xAxes: [

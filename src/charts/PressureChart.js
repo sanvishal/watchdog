@@ -10,8 +10,10 @@ import { AlertTriangle, TrendingUp } from "react-feather";
 const options = {
   responsive: true,
   // maintainAspectRatio: false,
-  legend: {
-    display: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
   },
   scales: {
     xAxes: [

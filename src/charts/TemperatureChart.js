@@ -19,8 +19,10 @@ import { constants } from "../config/naturalConstants";
 const options = {
   responsive: true,
   // maintainAspectRatio: false,
-  legend: {
-    display: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
   },
   scales: {
     xAxes: [
@@ -160,7 +162,6 @@ class TemperatureChart extends React.Component {
         .on("value", (snapshot) => {
           if (snapshot.exists()) {
             const val = snapshot.val();
-            console.log(val);
             this.setState({ realtimeValue: val });
             let altitudeDataqueue = this.queueValues(
               this.state.altitudeData,
@@ -242,7 +243,7 @@ class TemperatureChart extends React.Component {
       return (
         <React.Fragment>
           <div class="chart">
-            <div class="title">{this.props.name}</div>
+            <div class="title">{this.props.name} (°C)</div>
             <Line
               ref={(reference) => (this.chartReference = reference)}
               data={this.state.altitudeChart}

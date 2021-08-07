@@ -5,13 +5,24 @@ import firebaseConfig from "../config/firebaseConfig";
 import { firebaseRefPaths } from "../config/dbConstants";
 import { getDatabasePath } from "../utils/helpers";
 import { Line } from "react-chartjs-2";
-import { AlertTriangle, TrendingUp } from "react-feather";
+import {
+  AlertTriangle,
+  TrendingUp,
+  HelpCircle,
+  Meh,
+  Minus,
+  Smile,
+  TrendingDown,
+} from "react-feather";
+import { constants } from "../config/naturalConstants";
 
 const options = {
   responsive: true,
   // maintainAspectRatio: false,
-  legend: {
-    display: false,
+  plugins: {
+    legend: {
+      display: false,
+    },
   },
   scales: {
     xAxes: [
@@ -66,6 +77,7 @@ class HumidityChart extends React.Component {
         },
       ],
     },
+    realtimeValue: 0,
   };
 
   changeLabel() {
@@ -150,7 +162,7 @@ class HumidityChart extends React.Component {
         .on("value", (snapshot) => {
           if (snapshot.exists()) {
             const val = snapshot.val();
-            console.log(val);
+            this.setState({ realtimeValue: val });
             let altitudeDataqueue = this.queueValues(
               this.state.altitudeData,
               Number(val),
@@ -175,12 +187,66 @@ class HumidityChart extends React.Component {
     }
   };
 
+  getStatusColor(realtimeDifference) {
+    return realtimeDifference === 0
+      ? "#6D7688"
+      : realtimeDifference > 0
+      ? "greenyellow"
+      : "#EB3538";
+  }
+
+  getRealtimeStatus(realtimeValue) {
+    const { lowerHumidity, dangerHumidity } = constants.humidity;
+    if (realtimeValue === 0) {
+      return {
+        title: "-",
+        subtitle: "-",
+        color: "#6D7688",
+        jsx: <Minus />,
+      };
+    }
+    if (realtimeValue >= dangerHumidity && realtimeValue <= lowerHumidity) {
+      return {
+        title: "Warning",
+        subtitle: "Humidity levels are decreasing!",
+        color: "#FFB600",
+        jsx: <Meh />,
+      };
+    } else if (realtimeValue < dangerHumidity) {
+      return {
+        title: "Alert",
+        subtitle: "Air is very dry, fire spreads easily! Take Caution!",
+        color: "#EB3538",
+        jsx: <AlertTriangle />,
+      };
+    } else if (realtimeValue > lowerHumidity) {
+      return {
+        title: "Normal",
+        subtitle: "Air is Humid, no need to worry",
+        color: "greenyellow",
+        jsx: <Smile />,
+      };
+    }
+    return {
+      title: "Normal",
+      subtitle: "Air is Humid, no need to worry",
+      color: "greenyellow",
+      jsx: <Smile />,
+    };
+  }
+
   render() {
+    const { altitudeData, realtimeValue } = this.state;
+    let realtimeDifference =
+      altitudeData[0] && altitudeData[1]
+        ? altitudeData[0] - altitudeData[1]
+        : 0;
+    let realtimeStatus = this.getRealtimeStatus(realtimeValue);
     if (this.state.isConnected) {
       return (
         <React.Fragment>
           <div class="chart">
-            <div class="title">{this.props.name}</div>
+            <div class="title">{this.props.name} (%)</div>
             <Line
               ref={(reference) => (this.chartReference = reference)}
               data={this.state.altitudeChart}
@@ -191,25 +257,44 @@ class HumidityChart extends React.Component {
             <div class="realtime-value badge">
               <div class="title">Realtime Value</div>
               <div class="value">
-                51.4
-                <span class="unit"> °C</span>
+                {this.state.realtimeValue}
+                <span class="unit"> %</span>
               </div>
               <div class="trend">
-                <TrendingUp />
-                <span class="value">+3.2 °C</span>
+                {realtimeDifference === 0 ? (
+                  <Minus color={this.getStatusColor(realtimeDifference)} />
+                ) : realtimeDifference > 0 ? (
+                  <TrendingUp color={this.getStatusColor(realtimeDifference)} />
+                ) : (
+                  <TrendingDown
+                    color={this.getStatusColor(realtimeDifference)}
+                  />
+                )}
+                <span
+                  class="value"
+                  style={{ color: this.getStatusColor(realtimeDifference) }}
+                >
+                  {realtimeDifference > 0
+                    ? "+" + realtimeDifference.toFixed(1)
+                    : realtimeDifference.toFixed(1)}{" "}
+                  °C
+                </span>
               </div>
             </div>
             <div class="realtime-status badge">
               <div class="title">Realtime Status</div>
               <div class="status-container">
-                <div class="status-icon">
-                  <AlertTriangle />
+                <div
+                  class="status-icon"
+                  style={{ background: realtimeStatus.color }}
+                >
+                  {realtimeStatus.jsx}
                 </div>
                 <div class="status">
-                  <div class="title">Warning</div>
-                  <div class="sub-title">
-                    Temperature Exceeding Room temperature
+                  <div class="title" style={{ color: realtimeStatus.color }}>
+                    {realtimeStatus.title}
                   </div>
+                  <div class="sub-title">{realtimeStatus.subtitle}</div>
                 </div>
               </div>
             </div>
