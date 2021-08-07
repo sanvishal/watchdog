@@ -5,7 +5,16 @@ import firebaseConfig from "../config/firebaseConfig";
 import { firebaseRefPaths } from "../config/dbConstants";
 import { getDatabasePath } from "../utils/helpers";
 import { Line } from "react-chartjs-2";
-import { AlertTriangle, TrendingUp } from "react-feather";
+import {
+  AlertTriangle,
+  HelpCircle,
+  Meh,
+  Minus,
+  Smile,
+  TrendingDown,
+  TrendingUp,
+} from "react-feather";
+import { constants } from "../config/naturalConstants";
 
 const options = {
   responsive: true,
@@ -68,6 +77,7 @@ class GasChart extends React.Component {
         },
       ],
     },
+    realtimeValue: 0,
   };
 
   changeLabel() {
@@ -153,6 +163,7 @@ class GasChart extends React.Component {
           if (snapshot.exists()) {
             const val = snapshot.val();
             console.log(val);
+            this.setState({ realtimeValue: val });
             let altitudeDataqueue = this.queueValues(
               this.state.altitudeData,
               Number(val),
@@ -177,12 +188,60 @@ class GasChart extends React.Component {
     }
   };
 
+  getStatusColor(realtimeDifference) {
+    return realtimeDifference === 0
+      ? "#6D7688"
+      : realtimeDifference > 0
+      ? "#EB3538"
+      : "greenyellow";
+  }
+
+  getRealtimeStatus(realtimeValue) {
+    const { normalGas, higherGas } = constants.gas;
+    if (realtimeValue === 0) {
+      return {
+        title: "-",
+        subtitle: "-",
+        color: "#6D7688",
+        jsx: <Minus />,
+      };
+    }
+    if (realtimeValue <= normalGas) {
+      return {
+        title: "Normal",
+        subtitle: "This particulate ppm is pretty normal, no need to worry",
+        color: "greenyellow",
+        jsx: <Smile />,
+      };
+    } else if (realtimeValue > normalGas && realtimeValue <= higherGas) {
+      return {
+        title: "Warning",
+        subtitle: "Increased particulate matter detected!",
+        color: "#FFB600",
+        jsx: <Meh />,
+      };
+    }
+
+    return {
+      title: "Alert",
+      subtitle: "High particulate matter detected, take measures",
+      color: "#EB3538",
+      jsx: <AlertTriangle />,
+    };
+  }
+
   render() {
+    const { altitudeData, realtimeValue } = this.state;
+    let realtimeDifference =
+      altitudeData[0] && altitudeData[1]
+        ? altitudeData[0] - altitudeData[1]
+        : 0;
+    let realtimeStatus = this.getRealtimeStatus(realtimeValue);
     if (this.state.isConnected) {
       return (
         <React.Fragment>
           <div class="chart">
-            <div class="title">{this.props.name}</div>
+            <div class="title">{this.props.name} (ppm)</div>
             <Line
               ref={(reference) => (this.chartReference = reference)}
               data={this.state.altitudeChart}
@@ -193,25 +252,44 @@ class GasChart extends React.Component {
             <div class="realtime-value badge">
               <div class="title">Realtime Value</div>
               <div class="value">
-                51.4
-                <span class="unit"> °C</span>
+                {this.state.realtimeValue}
+                <span class="unit"> ppm</span>
               </div>
               <div class="trend">
-                <TrendingUp />
-                <span class="value">+3.2 °C</span>
+                {realtimeDifference === 0 ? (
+                  <Minus color={this.getStatusColor(realtimeDifference)} />
+                ) : realtimeDifference > 0 ? (
+                  <TrendingUp color={this.getStatusColor(realtimeDifference)} />
+                ) : (
+                  <TrendingDown
+                    color={this.getStatusColor(realtimeDifference)}
+                  />
+                )}
+                <span
+                  class="value"
+                  style={{ color: this.getStatusColor(realtimeDifference) }}
+                >
+                  {realtimeDifference > 0
+                    ? "+" + realtimeDifference.toFixed(1)
+                    : realtimeDifference.toFixed(1)}{" "}
+                  ppm
+                </span>
               </div>
             </div>
             <div class="realtime-status badge">
               <div class="title">Realtime Status</div>
               <div class="status-container">
-                <div class="status-icon">
-                  <AlertTriangle />
+                <div
+                  class="status-icon"
+                  style={{ background: realtimeStatus.color }}
+                >
+                  {realtimeStatus.jsx}
                 </div>
                 <div class="status">
-                  <div class="title">Warning</div>
-                  <div class="sub-title">
-                    Temperature Exceeding Room temperature
+                  <div class="title" style={{ color: realtimeStatus.color }}>
+                    {realtimeStatus.title}
                   </div>
+                  <div class="sub-title">{realtimeStatus.subtitle}</div>
                 </div>
               </div>
             </div>

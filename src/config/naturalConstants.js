@@ -8,4 +8,12 @@ export const constants = {
     lowerHumidity: 30,
     dangerHumidity: 20,
   },
+  pressure: {
+    lowPressure: 1100,
+    highPressure: 1200,
+  },
+  gas: {
+    normalGas: 500,
+    higherGas: 700,
+  },
 };
