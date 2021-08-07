@@ -28,6 +28,9 @@ const options = {
     xAxes: [
       {
         display: true,
+        ticks: {
+          beginAtZero: true,
+        },
       },
     ],
     yAxes: [
